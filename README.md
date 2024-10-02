@@ -382,6 +382,7 @@ const ws = crossws({
 
 Here, we are keeping track of connected and disconnected users into lobby, by `join` and `leave` methods. The `lobby` array keeps the peers. And each time a peer join's or leaves, we publish a message to the `lobby` peers, `{n: nb_connected()}`, which designates the number of connected peers.
 
+Note the logs for Network tab for our websocket connection and see `{n: 1}`, `{n: 2}` messages are sent to the browser as you open new tabs.
 
 We successfully received messages from the server to the browser. Final part is sending messages from the browser to the server and building the actual app logic. Which we will demonstrate by building a simple chat application.
 
@@ -426,5 +427,5 @@ This should be enough to build upon and build a realtime web application. For th
 
 ## References
 
-[lichess StrongSocket](https://github.com/lichess-org/lila/blob/1404ed1d5e96de14caea040498860ec22d56fb4d/ui/common/src/socket.ts#L49)
-[websockets in solidstart demo](https://github.com/peerreynders/solid-start-ws-demo/tree/main)
+- [lichess StrongSocket](https://github.com/lichess-org/lila/blob/1404ed1d5e96de14caea040498860ec22d56fb4d/ui/common/src/socket.ts#L49)
+- [websockets in solidstart demo](https://github.com/peerreynders/solid-start-ws-demo/tree/main)

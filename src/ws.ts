@@ -4,6 +4,14 @@ import { Peer } from 'crossws/dist'
 
 let lobby: Peer[] = []
 
+function peer_send(peer: Peer, data: any) {
+    if (typeof data === 'string') {
+        peer.send(data)
+    } else {
+        peer.send(JSON.stringify(data))
+    }
+}
+
 function log_error(str: string) {
     console.error(str)
 }
@@ -13,7 +21,7 @@ function nb_connected() {
 }
 
 function publish_lobby(data: any) {
-    lobby.forEach(_ => _.send(data))
+    lobby.forEach(_ => peer_send(_, data))
 }
 
 interface IDispatch {
@@ -56,11 +64,21 @@ class Lobby {
     }
 
     publish(data: any) {
-        lobby.forEach(_ => _.send(data))
+        lobby.forEach(_ => peer_send(_, data))
     }
 
     message(_: any) {
+        let { t, d } = _
 
+        switch (t) {
+            case 'chat':
+                let { name, text } = d
+
+                // maybe validate
+                this.publish({ t: 'chat', d: { name, text } })
+
+                break
+        }
     }
 }
 
@@ -71,13 +89,22 @@ const ws = crossws({
             i?.join()
         },
         message(peer, message) {
-            if (message.text().includes('ping')) {
-                peer.send('pong')
+            if (message.text() === 'ping') {
+                peer_send(peer, 'pong')
                 return
             }
 
             let i = dispatch_peer(peer)
-            i?.message(message.json())
+            let json
+            try {
+                json = message.json()
+            } catch (err) {
+
+                log_error(`[JSON Parse] ${err}`)
+            }
+            if (json) {
+               i?.message(json)
+            } 
         },
         close(peer, event) {
             let i = dispatch_peer(peer)
